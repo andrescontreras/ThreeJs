@@ -1,0 +1,294 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <title>Juego plataforma melo</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <meta name="keywords" content="Threejs, three.js, webgl, web gl, platform, game, platformer, javascript, HTML5">
+    <meta name="description" content="A simple platform game demo using WebGL and Three.js. Keyboard control - left/ right arrow keys move, up is jump. Programmed in JavaScript. Check back for a more polished version soon!">
+    <style>
+        body {
+            background: gray url(https://image.freepik.com/free-vector/memphis-pattern_1045-810.jpg) repeat 0 0;
+            width: 100%;
+            margin: 0;
+            text-align: center;
+            height: 300px;
+            
+            box-sizing: border-box;
+            -webkit-animation: slide 15s linear infinite;
+        }
+
+        @-webkit-keyframes slide {
+            from {
+                background-position: 0 0;
+            }
+            to {
+                background-position: 0 400px;
+            }
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/102/three.min.js "></script>
+    <script src="three.js"></script>
+    <script src="RequestAnimationFrame.js"></script>
+    <script>
+        var KEYCODE_SPACE = 32;
+        var KEYCODE_UP = 38;
+        var KEYCODE_LEFT = 37;
+        var KEYCODE_RIGHT = 39;
+        var KEYCODE_W = 87;
+        var KEYCODE_A = 65;
+        var KEYCODE_D = 68;
+        var camera, scene, renderer, mouse2d, sun, sphere;
+        var lfHeld = false;
+        var rtHeld = false;
+        var range = 400;
+        var speed = 1;
+        var sphereSize = 8;
+        var cubes = [];
+        var vy = 0;
+        var vx = 0;
+        var jumping = false;
+        var inAir = true;
+        var gravity = 0.3;
+        var myMusic;
+        var LMusic;
+        var WMusic;
+        var alturaMax;
+        var atl = 0;
+        function init() {
+            container = document.createElement('div');
+            document.body.appendChild(container);
+            
+            myMusic = new sound("Katamari Damacy - Lonely Rolling Star.mp3");
+            myMusic.play()
+            camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 1, 10000);
+            camera.position.set(300, 120, 0);
+            scene = new THREE.Scene();
+            sphere = new THREE.Mesh(new THREE.SphereGeometry(sphereSize, 10, 10), new THREE.MeshLambertMaterial({ color: color() }));
+			sphere.position.y = 100;
+			
+            scene.add(sphere);
+            camera.target = sphere.position;
+            renderer = new THREE.WebGLRenderer();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            container.appendChild(renderer.domElement);
+            var ambientLight = new THREE.AmbientLight(0xdddddd);
+            scene.add(ambientLight);
+            sun = new THREE.DirectionalLight(0xffffff);
+            sun.position = new THREE.Vector3(1, -1, 1).normalize();
+            scene.add(sun);
+            createPlatforms();
+            document.onkeydown = handleKeyDown;
+            document.onkeyup = handleKeyUp;
+            animate();
+        }
+        function createPlatforms() {
+			var cube = new THREE.Mesh(new THREE.CubeGeometry(100, 10, 150), new THREE.MeshLambertMaterial({ color: 0x003300 }));
+			cube.position = new THREE.Vector3(0, 0, 0);
+			cube.rotation.y = 0;
+			scene.add(cube);
+			THREE.Collisions.colliders.push(THREE.CollisionUtils.MeshOBB(cube));
+			cubes.push(cube);
+			
+			var randomX;
+			var posY = 0;
+			var izquierda = false;
+			var derecha = true;
+			for (var i = 0; i < 30; i++) {
+				if (izquierda) {
+					randomX = Math.floor(Math.random() * (150 - 50)) + 50;
+					izquierda = false;
+					derecha = true;
+				}
+				else if (derecha) {
+					randomX = (Math.floor(Math.random() * (150 - 50)) + 50) * -1;
+					derecha = false;
+					izquierda = true;
+				}
+				randomAncho = Math.floor(Math.random() * (150 - 20)) + 20;
+                posY += 40;
+                
+				createCube(100, 10, randomAncho, new THREE.Vector3(0, posY, randomX), 0);
+            }
+            alturaMax = posY;
+			//createCube(100, 10, 100, new THREE.Vector3(0, 80, 170), 0);
+			//createCube(100, 10, 100, new THREE.Vector3( 0, 160, 0), 0);
+			//createCube(100,10,100,new THREE.Vector3(0,150,300),0); // El primero es posicionY y el tercero es longitud y
+		}
+        function createCube(sx, sy, sz, p, ry) {
+			var cube = new THREE.Mesh(new THREE.CubeGeometry(sx, sy, sz), new THREE.MeshLambertMaterial({ color: color() }));
+			cube.position = p;
+			cube.rotation.y = ry;
+			scene.add(cube);
+			
+			THREE.Collisions.colliders.push(THREE.CollisionUtils.MeshOBB(cube));
+			cubes.push(cube);
+			
+			return cube;
+		}
+        function randomHex() {
+            var hexNumbers = [
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8,
+                9,
+                'A',
+                'B',
+                'C',
+                'D',
+                'E',
+                'F'
+            ]
+            // picking a random item of the array
+            return hexNumbers[Math.floor(Math.random() * hexNumbers.length)];
+        }
+        function color() {
+            hexValue = ['0x'];
+            for (var i = 0; i < 6; i += 1) {
+                hexValue.push(randomHex());
+            }
+            return hexValue.join('');
+        }
+
+
+
+
+        function animate() {
+            requestAnimationFrame(animate);
+            camera.position.x = sphere.position.x + 400;
+            if (jumping == true) {
+                camera.position.y = sphere.position.y + 200;
+            }
+            
+
+            
+            
+            if (sphere.position.y <0) {
+                camera.position.x = sphere.position.x + 400;
+                camera.position.y = sphere.position.y + 200;
+                camera.position.z = sphere.position.z + 200;
+            }
+            if (sphere.position.y <-500) {
+                myMusic.stop()
+                LMusic = new sound("Game Over - Super Mario Sunshine.mp3");
+                LMusic.play()
+                perder();
+            }
+            if(sphere.position.y > alturaMax+80)
+            {
+                myMusic.stop()
+                WMusic = new sound("Marios Victory Theme.mp3");
+                WMusic.play()
+               
+                ganar();
+            }
+            vy += gravity;
+            if (inAir) {
+                if (vy > 5) {
+                    vy = 5;
+                }
+            }
+            if (lfHeld) {
+                vx = 2;
+            }
+            if (rtHeld) {
+                vx = -2;
+            }
+            sphere.position.z += vx;
+            vx = vx * 0.8;
+            var ray = new THREE.Ray(sphere.position, new THREE.Vector3(0, -1, 0));
+            var c = THREE.Collisions.rayCastNearest(ray);
+            if (!c || c.distance > vy + sphereSize) {
+                sphere.position.y -= vy;
+                inAir = true;
+            } else {
+                inAir = false;
+                vy = 0; 		// switch gravity off
+                jumping = false;
+                
+            }
+            if (inAir == false && c.distance < sphereSize) {
+                sphere.position.y -= 1;
+                jumping = true;
+            }
+            if (inAir == false && c.distance > sphereSize) {
+                rebotar();
+            }
+            camera.lookAt(camera.target);
+            renderer.render(scene, camera);
+        }
+        function jump() {
+            if (jumping == false) {
+                sphere.position.y += 5;
+                vy = -8;
+                jumping = true;
+            }
+        }
+        function handleKeyDown(e) {
+            if (!e) { var e = window.event; }
+            switch (e.keyCode) {
+                case KEYCODE_A: ;
+                case KEYCODE_LEFT: lfHeld = true; break;
+                case KEYCODE_D: ;
+                case KEYCODE_RIGHT: rtHeld = true; break;
+                case KEYCODE_W: ;
+                case KEYCODE_UP: jump(); break;
+                //case KEYCODE_SP: reestablecer(); break;
+            }
+        }
+        function handleKeyUp(e) {
+            if (!e) { var e = window.event; }
+            switch (e.keyCode) {
+                case KEYCODE_A: ;
+                case KEYCODE_LEFT: lfHeld = false; break;
+                case KEYCODE_D: ;
+                case KEYCODE_RIGHT: rtHeld = false; break;
+            }
+        }
+        function rebotar() {
+            if (jumping == false) {
+                sphere.position.y += 5;
+                vy = -3;
+            }
+        }
+        function sound(src) {
+            this.sound = document.createElement("audio");
+            this.sound.src = src;
+            this.sound.setAttribute("preload", "auto");
+            this.sound.setAttribute("controls", "none");
+            this.sound.style.display = "none";
+            document.body.appendChild(this.sound);
+            this.play = function () {
+                this.sound.play();
+            }
+            this.stop = function () {
+                this.sound.pause();
+            }
+        }
+
+        
+
+        function perder() {
+            
+            alert("PERDIO MALO");
+            setTimeout("location.reload(true);",1500);
+        }
+
+        function ganar(){
+            alert("GANO PRO");
+            setTimeout("location.reload(true);",1500);
+        }
+    </script>
+</head>
+
+<body onLoad="init();">
+</body>
+
+</html>
