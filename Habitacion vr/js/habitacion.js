@@ -14,16 +14,20 @@ var controls = new THREE.OrbitControls(camera);
 controls.minDistance = 20;
 controls.maxDistance = 200;
 
-crearPared(70,15,-20,0,0,0,Math.PI / 2,0,parseInt('0xccffcc'));//Pared izquierda
-crearPared(70,15,20,0,0,0,Math.PI / 2,0,parseInt('0xccffcc'));//Pared derecha
-crearPared(40,15,0,0,-35,0,0,0,parseInt('0xccffcc'));//Pared adelante
-crearPared(40,15,0,0,35,0,0,0,parseInt('0xccffcc'));//Pared atras
-crearPared(40,70,0,-7.5,0,Math.PI/ 2,0,0,parseInt('FA8072')); //Piso
+crearPared(70,15,-20,0,0,0,Math.PI / 2,0,parseInt('0xccffcc'),'images/wall_texture.jpg');//Pared izquierda
+crearPared(70,15,20,0,0,0,Math.PI / 2,0,parseInt('0xccffcc'),'images/wall_texture.jpg');//Pared derecha
+crearPared(40,15,0,0,-35,0,0,0,parseInt('0xccffcc'),'images/wall_texture.jpg');//Pared adelante
+crearPared(40,15,0,0,35,0,0,0,parseInt('0xccffcc'),'images/wall_texture.jpg');//Pared atras
+crearPared(40,70,0,-7.5,0,Math.PI/ 2,0,0,parseInt('FA8072'),'images/floor_texture.jpg'); //Piso
+/*
+var geometry = new THREE.PlaneGeometry( 50, 50);
+   var texture = new THREE.TextureLoader().load('images/wall_texture.jpg');
+var material = new THREE.MeshBasicMaterial( {map: texture, side: THREE.DoubleSide} );
+var plane = new THREE.Mesh( geometry, material );
+plane.position.x=-40;   
+scene.add(plane);
+*/
 
-var light2 = new THREE.PointLight( 0xb4e7f2, 1.5 );
-//light2.position.x = -80;
-light2.angle = Math.PI / 5;
-scene.add(light2);
 var geometry = new THREE.PlaneGeometry(3, 3, 3 );
     var material = new THREE.MeshBasicMaterial( {color: 0xffff00, side: THREE.DoubleSide} );
     var plane = new THREE.Mesh( geometry, material );
@@ -77,7 +81,7 @@ var render = function () {
         }
 render();
 
-function crearPared(width, height,positionX,positionY,positionZ,rotationX,rotationY,rotationZ,colorPared){
+function crearPared(width, height,positionX,positionY,positionZ,rotationX,rotationY,rotationZ,colorPared,textura){
     /*
     var geometry = new THREE.PlaneGeometry( 15, 15);
     var material = new THREE.MeshBasicMaterial( {color: 0xccffcc, side: THREE.DoubleSide} );
@@ -87,10 +91,10 @@ function crearPared(width, height,positionX,positionY,positionZ,rotationX,rotati
     scene.add( plane );
     */
    var geometry = new THREE.PlaneGeometry( width, height);
-   //var texture = new THREE.TextureLoader().load('wall_texture2.jpg');
+   var texture = new THREE.TextureLoader().load(textura);
     //var material = new THREE.MeshStandardMaterial({ map: texture });
     //var material = new THREE.MeshBasicMaterial( {map: texture, side: THREE.DoubleSide} );
-    var material = new THREE.MeshBasicMaterial( {color: color(), side: THREE.DoubleSide} );
+    var material = new THREE.MeshBasicMaterial( {map: texture, side: THREE.DoubleSide} );
     var plane = new THREE.Mesh( geometry, material );
     if(positionX!=0){plane.position.x=positionX;}
     if(positionY!=0){plane.position.y=positionY;}
