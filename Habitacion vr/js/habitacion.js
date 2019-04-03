@@ -13,97 +13,119 @@ var controls = new THREE.OrbitControls(camera);
 controls.minDistance = 20;
 controls.maxDistance = 200;
 
-
-
-
- //Simple A-frame roof
- var roofVertices = [
-    new THREE.Vector3(0, 10, 0), new THREE.Vector3(10, 15, 0), new THREE.Vector3(20, 10, 0),
-    new THREE.Vector3(20, 10, 20), new THREE.Vector3(10, 15, 20), new THREE.Vector3(0, 10, 20)
+//Simple A-frame roof
+var roofVertices = [
+  new THREE.Vector3(0, 10, 0),
+  new THREE.Vector3(10, 15, 0),
+  new THREE.Vector3(20, 10, 0),
+  new THREE.Vector3(20, 10, 20),
+  new THREE.Vector3(10, 15, 20),
+  new THREE.Vector3(0, 10, 20)
 ];
 
 var material = new THREE.MeshBasicMaterial({
-    color: 0xccffcc,
-    side: THREE.DoubleSide
+  color: 0xccffcc,
+  side: THREE.DoubleSide
 });
 
 for (var i = 0; i < roofVertices.length; i++) {
+  var v1 = roofVertices[i];
+  var v2 = roofVertices[(i + 1) % roofVertices.length]; //wrap last vertex back to start
 
-    var v1 = roofVertices[i];
-    var v2 = roofVertices[(i + 1) % roofVertices.length];//wrap last vertex back to start
+  var wallGeometry = new THREE.Geometry();
 
-    var wallGeometry = new THREE.Geometry();
+  wallGeometry.vertices = [
+    v1,
+    v2,
+    new THREE.Vector3(v1.x, 0, v1.z),
+    new THREE.Vector3(v2.x, 0, v2.z)
+  ];
 
-    wallGeometry.vertices = [
-        v1,
-        v2,
-        new THREE.Vector3(v1.x, 0, v1.z),
-        new THREE.Vector3(v2.x, 0, v2.z)
-    ];
+  //always the same for simple 2-triangle plane
+  wallGeometry.faces = [new THREE.Face3(0, 1, 2), new THREE.Face3(1, 2, 3)];
 
-    //always the same for simple 2-triangle plane
-    wallGeometry.faces = [new THREE.Face3(0, 1, 2), new THREE.Face3(1, 2, 3)];
+  wallGeometry.computeFaceNormals();
+  wallGeometry.computeVertexNormals();
 
-    wallGeometry.computeFaceNormals();
-    wallGeometry.computeVertexNormals();
+  var wallMesh = new THREE.Mesh(wallGeometry, material);
 
-    var wallMesh = new THREE.Mesh(wallGeometry, material);
-
-    scene.add(wallMesh);
-
-
-    
+  scene.add(wallMesh);
 }
-var geometry = new THREE.PlaneGeometry(3, 3, 3 );
-    var material = new THREE.MeshBasicMaterial( {color: 0xffff00, side: THREE.DoubleSide} );
-    var plane = new THREE.Mesh( geometry, material );
-    plane.position.set(3,5,1);
-    plane.name = "switch";
-    scene.add(plane);
 
-    var light = new THREE.PointLight( 0xb4e7f2, intencidad );
-    light.position.set( 6, 6, 6 );
-    scene.add( light );
+var geometry = new THREE.PlaneGeometry(3, 3, 3);
+var material = new THREE.MeshBasicMaterial({
+  color: 0xffff00,
+  side: THREE.DoubleSide
+});
+var plane = new THREE.Mesh(geometry, material);
+plane.position.set(3, 5, 1);
+plane.name = "switch";
+scene.add(plane);
 
-    var geometry = new THREE.BoxGeometry( 2, 2, 2 );
-var material = new THREE.MeshLambertMaterial( {color: 0x00ff00} );
-var cube = new THREE.Mesh( geometry, material );
-cube.position.set(3,3,3);
-scene.add( cube );
+var geometry = new THREE.}(1, 1, 6);
+var material = new THREE.MeshBasicMaterial({
+  color: 0xffff00,
+  side: THREE.DoubleSide
+});
+var plane = new THREE.Mesh(geometry, material);
+plane.position.set(4, 1, 5);
+plane.name = "switch";
+scene.add(plane);
 
-var render = function () {
-    requestAnimationFrame(render);
-    raycaster.setFromCamera( mouse, camera );
 
-    // calculate objects intersecting the picking ray
-    var intersects = raycaster.intersectObjects( scene.children);
-    if(intersects.length>0) {
-      if(intersects[0].object.name=="switch")
-      {
-        if(t > 200)
-        {
-         console.log("ENTRO SWICTH");
-         intencidad = intencidad * -1
-         light.intensity = intencidad;
-         
-         t = 0;
-        }
-        t++;
-      }   
-    }else{t=0;}
-    //controls.update();
-    renderer.render( scene, camera );
-    //effect.render( scene, camera );
-    t++;
-  };
-  window.addEventListener( 'mousemove', onMouseMove, false );
-   
-    renderer.render(scene, camera);
-    function onMouseMove( event ) {
-        // calculate mouse position in normalized device coordinates
-        // (-1 to +1) for both components
-        mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
-        mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
-        }
+var light = new THREE.PointLight(0xb4e7f2, intencidad);
+light.position.set(6, 6, 6);
+scene.add(light);
+
+var ambientLight = new THREE.AmbientLight( 0x404040); // soft white light
+ambientLight.position.set(1, 1, 1);
+scene.add( ambientLight);
+
+var geometry = new THREE.BoxGeometry(2, 2, 2);
+var material = new THREE.MeshLambertMaterial({ color: 0x00ff00 });
+var cube = new THREE.Mesh(geometry, material);
+cube.position.set(3, 3, 3);
+scene.add(cube);
+
+var geometry = new THREE.SphereGeometry( 0.7, 32, 32 );
+var material = new THREE.MeshBasicMaterial( {color: 0xffff00} );
+var sphere = new THREE.Mesh( geometry, material );
+sphere.position.set(6,6,6);
+scene.add( sphere );
+
+
+var render = function() {
+  requestAnimationFrame(render);
+  raycaster.setFromCamera(mouse, camera);
+
+  // calculate objects intersecting the picking ray
+  var intersects = raycaster.intersectObjects(scene.children);
+  if (intersects.length > 0) {
+    if (intersects[0].object.name == "switch") {
+      if (t > 200) {
+        console.log("ENTRO SWICTH");
+        intencidad = intencidad * -1;
+        light.intensity = intencidad;
+
+        t = 0;
+      }
+      t++;
+    }
+  } else {
+    t = 0;
+  }
+  //controls.update();
+  renderer.render(scene, camera);
+  //effect.render( scene, camera );
+  t++;
+};
+window.addEventListener("mousemove", onMouseMove, false);
+
+renderer.render(scene, camera);
+function onMouseMove(event) {
+  // calculate mouse position in normalized device coordinates
+  // (-1 to +1) for both components
+  mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+  mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+}
 render();
-
