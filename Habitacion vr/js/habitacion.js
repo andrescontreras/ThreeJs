@@ -8,52 +8,22 @@ var t = 0;
 var intencidad = 0.8;
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
-camera.position.z = 20;
+camera.position.z = 50;
+camera.position.y=50;
 var controls = new THREE.OrbitControls(camera);
 controls.minDistance = 20;
 controls.maxDistance = 200;
 
+crearPared(70,15,-20,0,0,0,Math.PI / 2,0,parseInt('0xccffcc'));//Pared izquierda
+crearPared(70,15,20,0,0,0,Math.PI / 2,0,parseInt('0xccffcc'));//Pared derecha
+crearPared(40,15,0,0,-35,0,0,0,parseInt('0xccffcc'));//Pared adelante
+crearPared(40,15,0,0,35,0,0,0,parseInt('0xccffcc'));//Pared atras
+crearPared(40,70,0,-7.5,0,Math.PI/ 2,0,0,parseInt('FA8072')); //Piso
 
-
-
- //Simple A-frame roof
- var roofVertices = [
-    new THREE.Vector3(0, 10, 0), new THREE.Vector3(10, 15, 0), new THREE.Vector3(20, 10, 0),
-    new THREE.Vector3(20, 10, 20), new THREE.Vector3(10, 15, 20), new THREE.Vector3(0, 10, 20)
-];
-
-var material = new THREE.MeshBasicMaterial({
-    color: 0xccffcc,
-    side: THREE.DoubleSide
-});
-
-for (var i = 0; i < roofVertices.length; i++) {
-
-    var v1 = roofVertices[i];
-    var v2 = roofVertices[(i + 1) % roofVertices.length];//wrap last vertex back to start
-
-    var wallGeometry = new THREE.Geometry();
-
-    wallGeometry.vertices = [
-        v1,
-        v2,
-        new THREE.Vector3(v1.x, 0, v1.z),
-        new THREE.Vector3(v2.x, 0, v2.z)
-    ];
-
-    //always the same for simple 2-triangle plane
-    wallGeometry.faces = [new THREE.Face3(0, 1, 2), new THREE.Face3(1, 2, 3)];
-
-    wallGeometry.computeFaceNormals();
-    wallGeometry.computeVertexNormals();
-
-    var wallMesh = new THREE.Mesh(wallGeometry, material);
-
-    scene.add(wallMesh);
-
-
-    
-}
+var light2 = new THREE.PointLight( 0xb4e7f2, 1.5 );
+//light2.position.x = -80;
+light2.angle = Math.PI / 5;
+scene.add(light2);
 var geometry = new THREE.PlaneGeometry(3, 3, 3 );
     var material = new THREE.MeshBasicMaterial( {color: 0xffff00, side: THREE.DoubleSide} );
     var plane = new THREE.Mesh( geometry, material );
@@ -107,3 +77,57 @@ var render = function () {
         }
 render();
 
+function crearPared(width, height,positionX,positionY,positionZ,rotationX,rotationY,rotationZ,colorPared){
+    /*
+    var geometry = new THREE.PlaneGeometry( 15, 15);
+    var material = new THREE.MeshBasicMaterial( {color: 0xccffcc, side: THREE.DoubleSide} );
+    var plane = new THREE.Mesh( geometry, material );
+    plane.position.x=50;
+    plane.rotation.y = Math.PI / 2;
+    scene.add( plane );
+    */
+   var geometry = new THREE.PlaneGeometry( width, height);
+   //var texture = new THREE.TextureLoader().load('wall_texture2.jpg');
+    //var material = new THREE.MeshStandardMaterial({ map: texture });
+    //var material = new THREE.MeshBasicMaterial( {map: texture, side: THREE.DoubleSide} );
+    var material = new THREE.MeshBasicMaterial( {color: color(), side: THREE.DoubleSide} );
+    var plane = new THREE.Mesh( geometry, material );
+    if(positionX!=0){plane.position.x=positionX;}
+    if(positionY!=0){plane.position.y=positionY;}
+    if(positionZ!=0){plane.position.z=positionZ;}
+
+    if(rotationX!=0){plane.rotation.x = rotationX;}
+    if(rotationY!=0){plane.rotation.y = rotationY;}
+    if(rotationZ!=0){plane.rotation.z = rotationZ;}
+
+    scene.add( plane );
+}
+function randomHex() {
+    var hexNumbers = [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        'A',
+        'B',
+        'C',
+        'D',
+        'E',
+        'F'
+    ]
+    // picking a random item of the array
+    return hexNumbers[Math.floor(Math.random() * hexNumbers.length)];
+}
+function color() {
+    hexValue = ['0x'];
+    for (var i = 0; i < 6; i += 1) {
+        hexValue.push(randomHex());
+    }
+    return parseInt(hexValue.join(''));
+}
