@@ -19,6 +19,7 @@ crearPared(70,15,20,0,0,0,Math.PI / 2,0,parseInt('0xccffcc'),'images/wall_textur
 crearPared(40,15,0,0,-35,0,0,0,parseInt('0xccffcc'),'images/wall_texture.jpg');//Pared adelante
 crearPared(40,15,0,0,35,0,0,0,parseInt('0xccffcc'),'images/wall_texture.jpg');//Pared atras
 crearPared(40,70,0,-7.5,0,Math.PI/ 2,0,0,parseInt('FA8072'),'images/floor_texture.jpg'); //Piso
+crearPared(10,10,-19.5,1,0,0,Math.PI/ 2,0,parseInt('FA8072'),'images/atari.png'); //Poster atari
 /*
 var geometry = new THREE.PlaneGeometry( 50, 50);
    var texture = new THREE.TextureLoader().load('images/wall_texture.jpg');
@@ -31,18 +32,18 @@ scene.add(plane);
 var geometry = new THREE.PlaneGeometry(3, 3, 3 );
     var material = new THREE.MeshBasicMaterial( {color: 0xffff00, side: THREE.DoubleSide} );
     var plane = new THREE.Mesh( geometry, material );
-    plane.position.set(3,5,1);
+    plane.position.set(3,5,-34.5);
     plane.name = "switch";
     scene.add(plane);
 
     var light = new THREE.PointLight( 0xb4e7f2, intencidad );
-    light.position.set( 6, 6, 6 );
+    light.position.set( -6, 10, -28 );
     scene.add( light );
 
     var geometry = new THREE.BoxGeometry( 2, 2, 2 );
 var material = new THREE.MeshLambertMaterial( {color: 0x00ff00} );
 var cube = new THREE.Mesh( geometry, material );
-cube.position.set(3,3,3);
+cube.position.set(1,3,-33.5);
 scene.add( cube );
 
 var render = function () {
