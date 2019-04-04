@@ -19,7 +19,11 @@ crearPared(70,15,20,0,0,0,Math.PI / 2,0,parseInt('0xccffcc'),'images/wall_textur
 crearPared(40,15,0,0,-35,0,0,0,parseInt('0xccffcc'),'images/wall_texture.jpg');//Pared adelante
 crearPared(40,15,0,0,35,0,0,0,parseInt('0xccffcc'),'images/wall_texture.jpg');//Pared atras
 crearPared(40,70,0,-7.5,0,Math.PI/ 2,0,0,parseInt('FA8072'),'images/floor_texture.jpg'); //Piso
-crearPared(10,10,-19.5,1,0,0,Math.PI/ 2,0,parseInt('FA8072'),'images/atari.png'); //Poster atari
+crearPared(10,10,-19.9,1,0,0,Math.PI/ 2,0,parseInt('FA8072'),'images/atari.png'); //Poster atari
+crearPared(10,10,-19.9,1,20,0,Math.PI/ 2,0,parseInt('FA8072'),'images/window_texture.jpg'); //Ventana izquierda
+crearPared(10,10,19.9,1,-20,0,Math.PI/ 2,0,parseInt('FA8072'),'images/window_texture.jpg'); //Ventana derecha
+crearPared(10,15,0,0,34.9,0,0,0,parseInt('FA8072'),'images/door_texture.jpg'); //Puerta
+
 /*
 var geometry = new THREE.PlaneGeometry( 50, 50);
    var texture = new THREE.TextureLoader().load('images/wall_texture.jpg');
