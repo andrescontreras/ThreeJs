@@ -6,13 +6,16 @@ var raycaster = new THREE.Raycaster();
 var mouse = new THREE.Vector2();
 var t = 0;
 var intencidad = 0.8;
+var effect;
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 camera.position.z = 50;
 camera.position.y=50;
-var controls = new THREE.OrbitControls(camera);
-controls.minDistance = 20;
-controls.maxDistance = 200;
+camera.position.z=1;
+camera.position.y=1;
+//var controls = new THREE.OrbitControls(camera);
+//controls.minDistance = 20;
+//controls.maxDistance = 200;
 
 crearPared(70,15,-20,0,0,0,Math.PI / 2,0,parseInt('0xccffcc'),'images/wall_texture.jpg');//Pared izquierda
 crearPared(70,15,20,0,0,0,Math.PI / 2,0,parseInt('0xccffcc'),'images/wall_texture.jpg');//Pared derecha
@@ -50,6 +53,10 @@ var cube = new THREE.Mesh( geometry, material );
 cube.position.set(1,3,-33.5);
 scene.add( cube );
 
+effect = new THREE.StereoEffect( renderer );
+effect.setSize( window.innerWidth, window.innerHeight );
+var controls = new THREE.DeviceOrientationControls(camera);
+
 var render = function () {
     requestAnimationFrame(render);
     raycaster.setFromCamera( mouse, camera );
@@ -70,9 +77,9 @@ var render = function () {
         t++;
       }   
     }else{t=0;}
-    //controls.update();
-    renderer.render( scene, camera );
-    //effect.render( scene, camera );
+    //renderer.render( scene, camera );
+    controls.update();
+    effect.render( scene, camera );
     t++;
   };
   window.addEventListener( 'mousemove', onMouseMove, false );
@@ -85,6 +92,7 @@ var render = function () {
         mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
         }
 render();
+window.addEventListener('mousemove', onMouseMove, false); 
 
 function crearPared(width, height,positionX,positionY,positionZ,rotationX,rotationY,rotationZ,colorPared,textura){
     /*
