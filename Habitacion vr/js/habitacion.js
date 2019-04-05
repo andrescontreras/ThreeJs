@@ -3,6 +3,7 @@ var aspect = window.innerWidth / window.innerHeight;
 var camera = new THREE.PerspectiveCamera(60, aspect, 0.1, 1000);
 var renderer = new THREE.WebGLRenderer();
 var raycaster = new THREE.Raycaster();
+var arrow ;
 var mouse = new THREE.Vector2();
 var t = 0;
 var intencidad = 0.8;
@@ -27,14 +28,7 @@ crearPared(10,10,-19.9,1,20,0,Math.PI/ 2,0,parseInt('FA8072'),'images/window_tex
 crearPared(10,10,19.9,1,-20,0,Math.PI/ 2,0,parseInt('FA8072'),'images/window_texture.jpg'); //Ventana derecha
 crearPared(10,15,0,0,34.9,0,0,0,parseInt('FA8072'),'images/door_texture.jpg'); //Puerta
 
-/*
-var geometry = new THREE.PlaneGeometry( 50, 50);
-   var texture = new THREE.TextureLoader().load('images/wall_texture.jpg');
-var material = new THREE.MeshBasicMaterial( {map: texture, side: THREE.DoubleSide} );
-var plane = new THREE.Mesh( geometry, material );
-plane.position.x=-40;   
-scene.add(plane);
-*/
+//scene.add( arrow );
 
 var geometry = new THREE.PlaneGeometry(3, 3, 3 );
     var material = new THREE.MeshBasicMaterial( {color: 0xffff00, side: THREE.DoubleSide} );
@@ -56,17 +50,27 @@ scene.add( cube );
 effect = new THREE.StereoEffect( renderer );
 effect.setSize( window.innerWidth, window.innerHeight );
 var controls = new THREE.DeviceOrientationControls(camera);
+arrow = new THREE.ArrowHelper( camera.getWorldDirection(), camera.getWorldPosition(), 5, Math.random() * 0xffffff );
+scene.add( arrow )
 
 var render = function () {
     requestAnimationFrame(render);
     raycaster.setFromCamera( mouse, camera );
+    
+    scene.remove ( arrow );
+    arrow = new THREE.ArrowHelper( camera.getWorldDirection(), camera.getWorldPosition(), 2, Math.random() * 0xffffff );
+    scene.add( arrow );
+
 
     // calculate objects intersecting the picking ray
     var intersects = raycaster.intersectObjects( scene.children);
+
+    intersectedObject = intersects; //Añadido nuevo para vr raycaster
+
     if(intersects.length>0) {
       if(intersects[0].object.name=="switch")
       {
-        if(t > 200)
+        if(t > 60)
         {
          console.log("ENTRO SWICTH");
          intencidad = intencidad * -1
@@ -84,7 +88,7 @@ var render = function () {
   };
   window.addEventListener( 'mousemove', onMouseMove, false );
    
-    renderer.render(scene, camera);
+   // renderer.render(scene, camera);
     function onMouseMove( event ) {
         // calculate mouse position in normalized device coordinates
         // (-1 to +1) for both components
