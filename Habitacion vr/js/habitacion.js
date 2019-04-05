@@ -6,6 +6,8 @@ var raycaster = new THREE.Raycaster();
 var arrow ;
 var mouse = new THREE.Vector2();
 var t = 0;
+var tn = 0;
+var ta = 0;
 var intencidad = 0.8;
 var effect;
 renderer.setSize(window.innerWidth, window.innerHeight);
@@ -18,16 +20,18 @@ camera.position.y=1;
 //controls.minDistance = 20;
 //controls.maxDistance = 200;
 
-crearPared(70,15,-20,0,0,0,Math.PI / 2,0,parseInt('0xccffcc'),'images/wall_texture.jpg');//Pared izquierda
-crearPared(70,15,20,0,0,0,Math.PI / 2,0,parseInt('0xccffcc'),'images/wall_texture.jpg');//Pared derecha
-crearPared(40,15,0,0,-35,0,0,0,parseInt('0xccffcc'),'images/wall_texture.jpg');//Pared adelante
-crearPared(40,15,0,0,35,0,0,0,parseInt('0xccffcc'),'images/wall_texture.jpg');//Pared atras
-crearPared(40,70,0,-7.5,0,Math.PI/ 2,0,0,parseInt('FA8072'),'images/floor_texture.jpg'); //Piso
-crearPared(10,10,-19.9,1,0,0,Math.PI/ 2,0,parseInt('FA8072'),'images/atari.png'); //Poster atari
-crearPared(10,10,-19.9,1,20,0,Math.PI/ 2,0,parseInt('FA8072'),'images/window_texture.jpg'); //Ventana izquierda
-crearPared(10,10,19.9,1,-20,0,Math.PI/ 2,0,parseInt('FA8072'),'images/window_texture.jpg'); //Ventana derecha
-crearPared(10,15,0,0,34.9,0,0,0,parseInt('FA8072'),'images/door_texture.jpg'); //Puerta
-
+crearPared(70,15,-20,0,0,0,Math.PI / 2,0,parseInt('0xccffcc'),'images/wall_texture.jpg',"paredIzquierda");//Pared izquierda
+crearPared(70,15,20,0,0,0,Math.PI / 2,0,parseInt('0xccffcc'),'images/wall_texture.jpg',"paredDerecha");//Pared derecha
+crearPared(40,15,0,0,-35,0,0,0,parseInt('0xccffcc'),'images/wall_texture.jpg',"paredAdelante");//Pared adelante
+crearPared(40,15,0,0,35,0,0,0,parseInt('0xccffcc'),'images/wall_texture.jpg',"paredAtras");//Pared atras
+crearPared(40,70,0,-7.5,0,Math.PI/ 2,0,0,parseInt('FA8072'),'images/floor_texture.jpg',"piso"); //Piso
+crearPared(10,10,-19.9,1,0,0,Math.PI/ 2,0,parseInt('FA8072'),'images/atari.png',"posterAtari"); //Poster atari
+crearPared(10,10,-19.9,1,20,0,Math.PI/ 2,0,parseInt('FA8072'),'images/window_texture.jpg',"ventanaIzquierda"); //Ventana izquierda
+crearPared(10,10,19.9,1,-20,0,Math.PI/ 2,0,parseInt('FA8072'),'images/window_texture.jpg',"ventanaDerecha"); //Ventana derecha
+crearPared(10,15,0,0,34.9,0,0,0,parseInt('FA8072'),'images/door_texture.jpg',"puerta"); //Puerta
+crearPared(6,6,10,-6,23,Math.PI/ 2,0,0,parseInt('FA8072'),'images/orangeCarpet.jpeg',"tapeteNaranja"); //tapete naranja
+crearPared(6,6,10,-6,23,Math.PI/ 2,0,0,parseInt('FA8072'),'images/blueCarpet.jpeg',"tapeteAzul"); //tapete azul
+//crearPared(); //tapete azul
 //scene.add( arrow );
 
 var geometry = new THREE.PlaneGeometry(3, 3, 3 );
@@ -79,12 +83,38 @@ var render = function () {
          t = 0;
         }
         t++;
-      }   
-    }else{t=0;}
+      }else   
+      if(intersects[0].object.name=="tapeteNaranja")
+        {
+          if(tn > 60)
+          {
+           console.log("ENTRO tapete naranja");
+           camera.position.set(10,1,23);
+           
+           tn = 0;
+          }
+          tn++;
+        }
+        else   
+      if(intersects[0].object.name=="tapeteAzul")
+        {
+          if(ta > 60)
+          {
+           console.log("ENTRO tapete azul");
+           camera.position.set(10,1,23);
+           
+           ta = 0;
+          }
+          ta++;
+        }
+    }else{t=0;tn=0;ta=0;}
+
+    
     //renderer.render( scene, camera );
     controls.update();
     effect.render( scene, camera );
     t++;
+    tn++;
   };
   window.addEventListener( 'mousemove', onMouseMove, false );
    
@@ -98,7 +128,7 @@ var render = function () {
 render();
 window.addEventListener('mousemove', onMouseMove, false); 
 
-function crearPared(width, height,positionX,positionY,positionZ,rotationX,rotationY,rotationZ,colorPared,textura){
+function crearPared(width, height,positionX,positionY,positionZ,rotationX,rotationY,rotationZ,colorPared,textura,nombre){
     /*
     var geometry = new THREE.PlaneGeometry( 15, 15);
     var material = new THREE.MeshBasicMaterial( {color: 0xccffcc, side: THREE.DoubleSide} );
@@ -120,6 +150,8 @@ function crearPared(width, height,positionX,positionY,positionZ,rotationX,rotati
     if(rotationX!=0){plane.rotation.x = rotationX;}
     if(rotationY!=0){plane.rotation.y = rotationY;}
     if(rotationZ!=0){plane.rotation.z = rotationZ;}
+
+    plane.name = nombre;
 
     scene.add( plane );
 }
